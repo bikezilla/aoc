@@ -1,5 +1,8 @@
 {
   "devDependencies": {
-    "@types/node": "^16.11.11"
+    "@tsconfig/recommended": "^1.0.1",
+    "@types/lodash": "^4.14.177",
+    "@types/node": "^16.11.11",
+    "lodash": "^4.17.21"
   }
 }
