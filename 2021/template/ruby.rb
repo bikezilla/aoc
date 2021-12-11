@@ -4,4 +4,7 @@ input.
   then { p _1}
 
 __END__
-input string
+SMALL
+INPUT
+GOES
+HERE
