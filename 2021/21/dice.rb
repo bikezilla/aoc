@@ -19,6 +19,7 @@ def game(p1, p2, s1, s2, d1, d2)
 
   if s1 >= FINISH
     p 'Player 1 wins'
+    gets
   else
     print "Player 2: rolls #{d2} from #{p2}"
     p2 = move(p2, d2)
@@ -27,6 +28,7 @@ def game(p1, p2, s1, s2, d1, d2)
 
     if s2 >= FINISH
       p 'Player 2 wins'
+      gets
     else
       game(p1, p2, s1, s2, roll, roll)
     end
