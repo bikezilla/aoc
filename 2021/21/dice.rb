@@ -1,100 +1,144 @@
 require 'pry'
 
-FINISH = 21
+class Cache
+  attr_reader :iterations, :hits
 
-def dprint(s)
-  #print s
-end
-
-def roll
-  r = 3.times.map { @dice.next }
-  r.sum
-end
-
-def move(pos, draw)
-  (pos + draw).then { _1 > 10 ? _1 % 10 : _1}.then { _1 == 0 ? 10 : _1 }
-end
-
-def game(p1, p2, s1, s2, d1, d2)
-  signature = [p1, p2, s1, s2, d1, d2]
-
-  dprint "Calling with #{p1} #{p2} #{s1} #{s2} #{d1} #{d2}\n"
-  #binding.pry if p1 == 10 && p2 == 7 && s1 == 10 && s2 == 7 && d1 == 4 && d2 ==3
-  if @cache[signature] == 1
-    @cache_hits += 1
-    @win1 += 1
-  elsif @cache[signature] == 2
-    @cache_hits += 1
-    @win2 += 1
+  def initialize
+    @cache = {}
+    @iterations = 0
+    @hits = 0
   end
 
-  dprint "Player 1: rolls #{d1} from #{p1}"
-  p1 = move(p1, d1)
-  s1 += p1
-  dprint " to #{p1} score #{s1}\n"
+  def inc
+    @iterations += 1
+  end
 
-  if s1 >= FINISH
-    @cache[signature] = 1
-    @win1 += 1
+  def hit
+    @hits += 1
+  end
 
-    dprint "Player 1 wins\n"
-  else
-    dprint "Player 2: rolls #{d2} from #{p2}"
-    p2 = move(p2, d2)
-    s2 += p2
-    dprint " to #{p2} score #{s2}\n"
+  def set(sig, res)
+    #p "#{sig}: #{res}"
+    @cache[sig] = res
+  end
 
-    if s2 >= FINISH
-      @cache[signature] = 2
-      @win2 += 1
+  def get(sig)
+    @cache[sig]
+  end
 
-      dprint "Player 2 wins\n"
-    else
-      @draws.each do |d1, c1|
-        @draws.each do |d2, c2|
-          game(p1, p2, s1, s2, d1, d2)
+  def size
+    @cache.size
+  end
+end
+
+class DeterministicDice
+  def initialize
+    @dice = (1..100).to_a.cycle
+  end
+
+  def roll
+    r = 3.times.map { @dice.next }
+    p "Rolling #{r}"
+    [r.sum]
+  end
+end
+
+class DiracDice
+  THREE =
+    [1, 2, 3].map do |a|
+      [1, 2, 3].map do |b|
+        [1, 2, 3].map do |c|
+          a + b + c
         end
       end
-    end
+    end.flatten
+
+  TWO =
+    [1, 2].map do |a|
+      [1, 2].map do |b|
+        a + b
+      end
+    end.flatten
+
+  def roll
+    THREE
   end
 end
+
+class Game
+  def initialize(p1, p2, s1, s2)
+    @p1 = p1
+    @p2 = p2
+    @s1 = s1
+    @s2 = s2
+  end
+
+  def advance
+    DICE.roll.map do |d1|
+      DICE.roll.map do |d2|
+        np1 = move @p1, d1
+        np2 = move @p2, d2
+        ns1 = @s1 + np1
+        ns2 = @s2 + np2
+
+        g = Game.new np1, np2, ns1, ns2
+        #p "FROM: #{self} BY #{d1}, #{d2} TO: #{g}"
+        g
+      end
+    end.flatten
+  end
+
+  def winner_stat
+    if CACHE.get(sig)
+      CACHE.hit
+      return CACHE.get(sig)
+    end
+
+    CACHE.inc
+
+    result =
+      if @s1 >= FINISH
+        {first: 1}
+      elsif @s2 >= FINISH
+        {second: 1}
+      else
+        advance.reduce({}) { |m, c| m.merge(c.winner_stat) { |k, o, n| o + n }}
+      end
+
+    CACHE.set(sig, result)
+    #p "WINNERS: #{self}: #{result}"
+    result
+  end
+
+  def move(p, d)
+    (p + d).then { _1 > 10 ? _1 % 10 : _1}.then { _1 == 0 ? 10 : _1 }
+  end
+
+  def to_s
+    "P1 at #{@p1}(#{@s1}), P2 at #{@p2}(#{@s2})"
+  end
+
+  def sig
+    [@p1, @p2, @s1, @s2].join
+  end
+end
+
+FINISH = 21
+DICE = DiracDice.new
+CACHE = Cache.new
 
 input = (STDIN.tty? ? DATA : STDIN).readlines(chomp: true)
 p1, p2 = input.map { _1.split(': ')[1].to_i }
-p1, p2 = p2, p1
-s1, s2 = 0, 0
-@dice = (1..100).to_a.cycle
 
-#@draws = [3, 4, 5,
-         #4, 5, 6,
-         #5, 6, 7,
-         #4, 5, 6,
-         #5, 6, 7,
-         #6, 7, 8,
-         #5, 6, 7,
-         #6, 7, 8,
-         #7, 8, 9]
-#
-#@draws = [2, 3,
-          #3, 4]
-@draws =  {3=>1, 4=>3, 5=>6, 6=>7, 7=>6, 8=>3, 9=>1}
+current = Game.new p1, p2, 0, 0
+a = current.winner_stat
+p a
+p a.values.max
 
-@cache = {}
-@cache_hits = 0
-@win1 = 0
-@win2 = 0
-
-@draws.each do |d1, c1|
-  @draws.each do |d2, c2|
-    game(p1, p2, 0, 0, d1, d2)
-  end
-end
-
-#pp @cache
-p @cache.size
-p @cache_hits
-p @win1
-p @win2
+p 'cache'
+p CACHE.iterations
+p CACHE.hits
+p CACHE.size
 
 __END__
 Player 1 starting position: 4
