@@ -1,5 +1,7 @@
 #!ruby
+
 input = (STDIN.tty? ? DATA : STDIN).readlines(chomp: true)
+input = DATA.readlines(chomp: true) if input.size == 0
 
 SHAPE_SCORES = {
   'X': 1, # Rock, also A

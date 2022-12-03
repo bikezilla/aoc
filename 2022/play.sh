@@ -26,7 +26,9 @@ then
   HEADER="cookie: session=$SESSION"
   curl --silent $URL -H $HEADER >> input.txt
   echo "Done!"
+else
+  cd $DIR
 fi
 
 open "https://adventofcode.com/$YEAR/day/$DAY"
-vig $DIR/solution.rb
+vig solution.rb
