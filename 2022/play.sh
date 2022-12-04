@@ -24,7 +24,7 @@ then
 
   URL="https://adventofcode.com/$YEAR/day/$DAY/input"
   HEADER="cookie: session=$SESSION"
-  curl --silent $URL -H $HEADER >> input.txt
+  curl --silent $URL -H $HEADER > input.txt
   echo "Done!"
 else
   cd $DIR
