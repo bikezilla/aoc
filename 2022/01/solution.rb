@@ -15,6 +15,7 @@ input.
       current_sum = 0
     end
   end
+sums << current_sum
 
 p sums.max
 p sums.sort.last(3).sum
@@ -34,4 +35,3 @@ __END__
 9000
 
 10000
-
