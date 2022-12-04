@@ -17,9 +17,8 @@ input.
   then { p _1}
 
 input.
-  each_slice(3).map do |slice|
-    slice[0].chars & slice[1].chars & slice[2].chars
-  end.
+  each_slice(3).
+  map { _1.chars & _2.chars & _3.chars }.
   flatten.
   map { _1.ord -  (_1 < 'a' ? 38 : 96) }.
   sum.
