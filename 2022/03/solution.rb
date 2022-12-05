@@ -14,7 +14,7 @@ input.
   flatten.
   map { _1.ord -  (_1 < 'a' ? 38 : 96) }.
   sum.
-  then { p _1}
+  then { puts _1 }
 
 input.
   each_slice(3).
@@ -22,7 +22,7 @@ input.
   flatten.
   map { _1.ord -  (_1 < 'a' ? 38 : 96) }.
   sum.
-  then { p _1}
+  then { puts _1 }
 
 __END__
 vJrwpWtwJgWrhcsFMMfFFhFp

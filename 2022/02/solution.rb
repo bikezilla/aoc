@@ -28,7 +28,7 @@ input.
 
     score + game_score + my_move_score
   end.
-  then { p _1}
+  then { puts _1 }
 
 RESULT_SCORES = {
   X: 0, # Lose
@@ -55,7 +55,7 @@ input.
 
     score + game_score + my_move_score
   end.
-  then { p _1}
+  then { puts _1 }
 
 __END__
 A Y

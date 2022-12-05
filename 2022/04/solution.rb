@@ -6,7 +6,7 @@ input = DATA.readlines(chomp: true) if input.size == 0
 input.
   map { |line| line.split(',').map { (_1.split('-')[0].to_i)..(_1.split('-')[1].to_i) } }.
   count { |left, right| left.cover?(right) || right.cover?(left) }.
-  then { p _1}
+  then { puts _1 }
 
 input.
   map { |line| line.split(',').map { (_1.split('-')[0].to_i)..(_1.split('-')[1].to_i) } }.
@@ -16,7 +16,7 @@ input.
       right.include?(left.begin) ||
       right.include?(left.end)
   end.
-  then { p _1}
+  then { puts _1 }
 
 __END__
 2-4,6-8
