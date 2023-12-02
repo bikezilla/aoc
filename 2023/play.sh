@@ -14,27 +14,24 @@ DIR=$DAY
 
 echo "It's day $DAY!"
 
-cd $DIR
+echo "Checking for $DIR..."
+if ! [ -d "$DIR" ]
+then
+  echo "Setting up $DIR..."
+  mkdir $DIR
+  cp templates/solution.rb $DIR/solution1.rb
+  cp templates/solution.rb $DIR/solution2.rb
+  cd $DIR
 
-echo "$(pwd)"
+  URL="https://adventofcode.com/$YEAR/day/$DAY/input"
+  HEADER="cookie: session=$SESSION"
+  echo "Getting input ..."
+  curl --silent $URL -H $HEADER > input.txt
 
-#echo "Checking for $DIR..."
-#if ! [ -d "$DIR" ]
-#then
-  #echo "Setting up $DIR..."
-  #mkdir $DIR
-  #cp templates/* $DIR
-  #cd $DIR
-
-  #URL="https://adventofcode.com/$YEAR/day/$DAY/input"
-  #HEADER="cookie: session=$SESSION"
-  #echo "Getting input ..."
-  #curl --silent $URL -H $HEADER > input.txt
-
-  #echo "Done!"
-  #open "https://adventofcode.com/$YEAR/day/$DAY"
-  #vig solution.rb
-#else
-  #cd $DIR
-#fi
+  echo "Done!"
+  open "https://adventofcode.com/$YEAR/day/$DAY"
+  vig solution1.rb solution2.rb input.txt
+else
+  echo "Already setup!"
+fi
 
